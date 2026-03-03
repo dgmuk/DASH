@@ -17,15 +17,17 @@
             background-color: #f3f4f6; 
         }
         
-        /* Кастомные радиокнопки для мобильных устройств */
+        /* Кастомные радиокнопки с эффектом увеличения при клике */
         .radio-label {
-            transition: all 0.2s ease-in-out;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         }
         input[type="radio"]:checked + .radio-label {
             background-color: #3b82f6; /* blue-500 */
             color: white;
             border-color: #3b82f6;
-            box-shadow: 0 4px 6px -1px rgba(59, 130, 246, 0.5);
+            transform: scale(1.05); /* Увеличение при выборе */
+            box-shadow: 0 10px 15px -3px rgba(59, 130, 246, 0.4);
+            z-index: 10;
         }
         input[type="radio"]:focus + .radio-label {
             ring: 2px;
@@ -33,7 +35,7 @@
             ring-blue-400;
         }
 
-        /* Легкая анимация появления (Fade In Up) */
+        /* Анимация появления контента */
         @keyframes fadeInUp {
             from {
                 opacity: 0;
@@ -49,6 +51,50 @@
             opacity: 0;
             animation: fadeInUp 0.6s ease-out forwards;
         }
+
+        /* Плавность карточек при наведении */
+        .question-block {
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        .question-block:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
+        }
+
+        /* СТИЛИ ДЛЯ ИДЕАЛЬНОЙ ПЕЧАТИ */
+        @media print {
+            body {
+                background-color: white !important;
+            }
+            /* Скрываем всё, кроме модального окна с результатами */
+            body > div > *:not(#results-modal) {
+                display: none !important;
+            }
+            #results-modal {
+                position: static !important;
+                display: block !important;
+                visibility: visible !important;
+            }
+            /* Скрываем фон затемнения */
+            .fixed.inset-0.bg-gray-500 {
+                display: none !important;
+            }
+            /* Убираем тени и скругления для печати */
+            #results-modal > div {
+                padding: 0 !important;
+                min-height: auto !important;
+            }
+            #results-modal .inline-block {
+                box-shadow: none !important;
+                border: none !important;
+                max-width: 100% !important;
+                transform: none !important;
+            }
+            /* Скрываем блок с кнопками при печати */
+            .print-hide {
+                display: none !important;
+            }
+        }
     </style>
 </head>
 <body class="text-gray-800 antialiased pb-12">
@@ -60,7 +106,7 @@
             <h1 class="text-3xl font-bold text-gray-900 mb-4 text-center">Опросник DASH</h1>
             <p class="text-lg text-gray-600 text-center mb-6">Оценка неспособностей верхних конечностей (рука, плечо, кисть)</p>
             
-            <div class="bg-blue-50 rounded-xl p-5 text-sm text-blue-900 leading-relaxed">
+            <div class="bg-blue-50 rounded-xl p-5 text-sm text-blue-900 leading-relaxed transition-all hover:bg-blue-100">
                 <h3 class="font-semibold text-blue-800 mb-2">Инструкция по заполнению:</h3>
                 <ul class="list-disc pl-5 space-y-2">
                     <li>Ориентируйтесь исключительно на ваше состояние <b>в течение последней недели</b>.</li>
@@ -86,9 +132,9 @@
             </section>
 
             <!-- ИНФОРМАЦИОННАЯ ПЛАШКА -->
-            <div class="bg-indigo-50 border-l-4 border-indigo-500 p-5 rounded-r-xl shadow-sm fade-in-up" style="animation-delay: 0.2s;">
+            <div class="bg-indigo-50 border-l-4 border-indigo-500 p-5 rounded-r-xl shadow-sm fade-in-up hover:bg-indigo-100 transition-colors" style="animation-delay: 0.2s;">
                 <div class="flex items-start">
-                    <div class="flex-shrink-0 mt-0.5">
+                    <div class="flex-shrink-0 mt-0.5 transform transition-transform hover:scale-110">
                         <svg class="h-6 w-6 text-indigo-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                         </svg>
@@ -109,7 +155,7 @@
                         <input id="enable-sports" type="checkbox" class="h-5 w-5 text-blue-600 border-gray-300 rounded focus:ring-blue-500 cursor-pointer transition-transform hover:scale-110">
                     </div>
                     <div class="ml-3 text-lg">
-                        <label for="enable-sports" class="font-bold text-gray-800 cursor-pointer">Модуль: Спортсмены / Музыканты (дополнительно)</label>
+                        <label for="enable-sports" class="font-bold text-gray-800 cursor-pointer hover:text-blue-600 transition-colors">Модуль: Спортсмены / Музыканты (дополнительно)</label>
                         <p class="text-sm text-gray-500 mt-1">Отметьте, если проблема с рукой влияет на игру на инструменте или занятия спортом.</p>
                     </div>
                 </div>
@@ -130,7 +176,7 @@
                         <input id="enable-work" type="checkbox" class="h-5 w-5 text-blue-600 border-gray-300 rounded focus:ring-blue-500 cursor-pointer transition-transform hover:scale-110">
                     </div>
                     <div class="ml-3 text-lg">
-                        <label for="enable-work" class="font-bold text-gray-800 cursor-pointer">Модуль: Работа (дополнительно)</label>
+                        <label for="enable-work" class="font-bold text-gray-800 cursor-pointer hover:text-blue-600 transition-colors">Модуль: Работа (дополнительно)</label>
                         <p class="text-sm text-gray-500 mt-1">Отметьте, если вы работаете (включая ведение домашнего хозяйства как основное дело).</p>
                     </div>
                 </div>
@@ -158,9 +204,9 @@
                 </div>
             </div>
 
-            <!-- КНОПКА ОТПРАВКИ (Теперь внизу формы, статичная) -->
+            <!-- КНОПКА ОТПРАВКИ -->
             <div class="flex justify-center mt-10 mb-8 fade-in-up" style="animation-delay: 0.6s;">
-                <button type="button" onclick="calculateResults()" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-4 px-12 rounded-full shadow-lg transform transition-all duration-300 hover:scale-105 hover:shadow-xl focus:outline-none focus:ring-4 focus:ring-blue-300 text-lg w-full sm:w-auto">
+                <button type="button" onclick="calculateResults()" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-4 px-12 rounded-full shadow-lg transform transition-all duration-300 hover:scale-105 hover:shadow-xl focus:outline-none focus:ring-4 focus:ring-blue-300 focus:ring-offset-2 text-lg w-full sm:w-auto">
                     Подсчитать результат
                 </button>
             </div>
@@ -171,7 +217,7 @@
             <div class="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
                 <!-- Фон затемнения -->
                 <div class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" aria-hidden="true" onclick="closeResults()"></div>
-                <span class="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">&#8203;</span>
+                <span class="hidden sm:inline-block sm:align-middle sm:h-screen print-hide" aria-hidden="true">&#8203;</span>
                 
                 <!-- Панель модального окна -->
                 <div class="inline-block align-bottom bg-white rounded-2xl text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-2xl w-full">
@@ -184,7 +230,7 @@
                                 
                                 <div class="space-y-6">
                                     <!-- Основной результат -->
-                                    <div class="bg-gray-50 rounded-xl p-6 border border-gray-200 relative overflow-hidden">
+                                    <div class="bg-gray-50 rounded-xl p-6 border border-gray-200 relative overflow-hidden transition-all duration-500 hover:shadow-md">
                                         <div class="absolute top-0 left-0 w-2 h-full bg-blue-500"></div>
                                         <h4 class="text-lg font-semibold text-gray-700 mb-1">Основная шкала DASH</h4>
                                         <div class="flex items-end mb-2">
@@ -192,14 +238,14 @@
                                             <span class="text-xl text-gray-500 mb-1 ml-1">/ 100</span>
                                         </div>
                                         <!-- Прогресс бар -->
-                                        <div class="w-full bg-gray-200 rounded-full h-2.5 mb-2 mt-4">
-                                            <div id="bar-main" class="h-2.5 rounded-full" style="width: 0%; transition: width 1s ease-in-out;"></div>
+                                        <div class="w-full bg-gray-200 rounded-full h-2.5 mb-2 mt-4 print-hide">
+                                            <div id="bar-main" class="h-2.5 rounded-full" style="width: 0%; transition: width 1s cubic-bezier(0.4, 0, 0.2, 1);"></div>
                                         </div>
                                         <p id="interp-main" class="text-gray-800 font-medium mt-3 text-lg"></p>
                                     </div>
 
                                     <!-- Спорт Результат -->
-                                    <div id="res-sports-container" class="hidden bg-gray-50 rounded-xl p-5 border border-gray-200 relative overflow-hidden">
+                                    <div id="res-sports-container" class="hidden bg-gray-50 rounded-xl p-5 border border-gray-200 relative overflow-hidden transition-all hover:shadow-md">
                                         <div class="absolute top-0 left-0 w-2 h-full bg-green-500"></div>
                                         <h4 class="text-md font-semibold text-gray-700 mb-1">Модуль: Спорт / Музыка</h4>
                                         <div class="flex items-end">
@@ -209,7 +255,7 @@
                                     </div>
 
                                     <!-- Работа Результат -->
-                                    <div id="res-work-container" class="hidden bg-gray-50 rounded-xl p-5 border border-gray-200 relative overflow-hidden">
+                                    <div id="res-work-container" class="hidden bg-gray-50 rounded-xl p-5 border border-gray-200 relative overflow-hidden transition-all hover:shadow-md">
                                         <div class="absolute top-0 left-0 w-2 h-full bg-purple-500"></div>
                                         <h4 class="text-md font-semibold text-gray-700 mb-1">Модуль: Работа</h4>
                                         <div class="flex items-end">
@@ -238,14 +284,18 @@
                             </div>
                         </div>
                     </div>
-                    <div class="bg-gray-50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">
-                        <button type="button" onclick="closeResults()" class="w-full inline-flex justify-center rounded-lg border border-transparent shadow-sm px-4 py-2 bg-gray-800 text-base font-medium text-white hover:bg-gray-900 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500 sm:ml-3 sm:w-auto sm:text-sm">
+                    
+                    <!-- Кнопки управления (скрываются при печати) -->
+                    <div class="bg-gray-50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse print-hide">
+                        <button type="button" onclick="closeResults()" class="w-full inline-flex justify-center rounded-lg border border-transparent shadow-sm px-4 py-2 bg-gray-800 text-base font-medium text-white hover:bg-gray-900 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500 sm:ml-3 sm:w-auto sm:text-sm transition-colors duration-300">
                             Закрыть
                         </button>
                         <button type="button" id="copy-btn" onclick="copyResults()" class="mt-3 w-full inline-flex justify-center rounded-lg border border-transparent shadow-sm px-4 py-2 bg-green-600 text-base font-medium text-white hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm transition-colors duration-300">
                             Скопировать для тренера
                         </button>
-                        <button type="button" onclick="window.print()" class="mt-3 w-full inline-flex justify-center rounded-lg border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm">
+                        <!-- Измененный дизайн кнопки Распечатать -->
+                        <button type="button" onclick="printReport()" class="mt-3 w-full inline-flex justify-center rounded-lg border border-blue-300 shadow-sm px-4 py-2 bg-blue-50 text-base font-medium text-blue-700 hover:bg-blue-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm transition-colors duration-300">
+                            <svg class="w-5 h-5 mr-2 -ml-1 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"></path></svg>
                             Распечатать
                         </button>
                     </div>
@@ -331,7 +381,7 @@
                     optionsHtml += `
                         <div class="relative flex-1">
                             <input type="radio" id="${id}" name="${name}" value="${val}" class="peer sr-only">
-                            <label for="${id}" class="radio-label flex flex-col items-center justify-center h-full p-3 text-center border-2 border-gray-200 rounded-xl cursor-pointer bg-white text-sm font-medium text-gray-600 hover:bg-gray-50 peer-focus:outline-none">
+                            <label for="${id}" class="radio-label flex flex-col items-center justify-center h-full p-3 text-center border-2 border-gray-200 rounded-xl cursor-pointer bg-white text-sm font-medium text-gray-600 hover:bg-blue-50 hover:border-blue-300 peer-focus:outline-none">
                                 <span class="text-xl font-bold mb-1">${val}</span>
                                 <span class="text-xs leading-tight">${label}</span>
                             </label>
@@ -393,6 +443,11 @@
             const answered = document.querySelectorAll('input[name^="main_q"]:checked').length;
             const progressEl = document.getElementById('main-progress');
             progressEl.textContent = `${answered} / 30`;
+            
+            // Легкая пульсация счетчика при изменении
+            progressEl.classList.add('scale-110');
+            setTimeout(() => progressEl.classList.remove('scale-110'), 200);
+
             if (answered >= 27) {
                 progressEl.classList.remove('bg-gray-200', 'text-gray-500');
                 progressEl.classList.add('bg-green-100', 'text-green-700');
@@ -541,6 +596,12 @@
             document.getElementById('results-modal').classList.add('hidden');
         }
 
+        // Функция печати, которая просто вызывает окно принтера браузера. 
+        // Если окно блокирует печать, пользователю стоит открыть скачанный HTML файл локально.
+        function printReport() {
+            window.print();
+        }
+
         function copyResults() {
             let text = "РЕЗУЛЬТАТЫ ОПРОСНИКА DASH\n==========================\n\n";
 
@@ -556,9 +617,9 @@
             });
             
             const mainScore = document.getElementById('score-main').textContent;
-            const mainInterp = document.getElementById('interp-main').innerText;
+            const mainInterp = document.getElementById('interp-main').innerText.replace('Интерпретация: ', '');
             text += `ИТОГ (Основной блок): ${mainScore} / 100\n`;
-            text += `${mainInterp}\n\n`;
+            text += `Интерпретация: ${mainInterp}\n\n`;
 
             // Сбор данных Спорт/Музыка
             if (document.getElementById('enable-sports').checked) {
